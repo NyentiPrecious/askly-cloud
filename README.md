@@ -8,16 +8,16 @@
 
 **Askly** is a customizable, containerized survey platform built with Django, PostgreSQL, and Docker. It helps you create and manage surveys, collect responses, and visualize insights—all while being cloud-ready and scalable. Designed as a learning project for aspiring cloud architects, Askly combines technical precision with creative storytelling. Also, Askly embraces a sleek and modern aesthetic with a glassy purple color palette—balancing elegance with tech minimalism.
 
+![Admin Dashboard](./assets/login.png)
+![Homepage](./assets/dark-home.png)
+![Askly Homepage](./assets/homeage.png) 
 ![Askly Banner](./assets/create.png) 
 ![Askly Homepage](./assets/dark-dash.png)
-![Survey List](./assets/survey.png)
-![Submission Form](./assets/dark-home.png)
-![Admin Dashboard](./assets/login.png)
 ![Askly Homepage](./assets/dark-survey.png)
-![Survey List](./assets/dark-tem.png)
+![Survey List](./assets/survey.png)
 ![Submission Form](./assets/dashboard.png)
-![Admin Dashboard](./assets/template.png)
-![Askly Homepage](./assets/homeage.png) <!-- optional banner -->
+![Survey List](./assets/dark-tem.png)
+![Admin Dashboard](./assets/template.png)<!-- optional banner -->
 
 ---
 
