@@ -1,0 +1,74 @@
+{% extends "surveys/base.html" %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Survey List</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script src="https://kit.fontawesome.com/a2e0b2a315.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/main.js' %}" defer></script>
+</head>
+<body>
+    {% block content %}
+    <main class="survey-container">
+        <h1>Available Surveys</h1>
+
+        <!-- 🔹 Search & Filter Controls -->
+        <section class="survey-controls">
+            <input type="text" id="surveySearch" placeholder="Search surveys..." onkeyup="filterSurveys()" />
+            <select id="surveyFilter" onchange="filterSurveys()">
+                <option value="all">All Surveys</option>
+                <option value="active">Active</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+            </select>
+        </section>
+
+        <!-- 🔹 Survey List -->
+        <div id="surveyContainer">
+            {% for survey in surveys %}
+            <div class="survey-card" data-status="{{ survey.status }}">
+                <div class="survey-header">
+                    <h3 contenteditable="true" onblur="updateTitle('{{ survey.id }}', this.innerText)">
+                        {{ survey.title }}
+                    </h3>
+                    <button class="star-btn" onclick="toggleArchive('{{ survey.id }}', this)">
+                        <i class="fas fa-star"></i>
+                    </button>
+                </div>
+                <p>{{ survey.description }}</p>
+                <div class="actions">
+                    <a href="{% url 'take_survey' survey.slug %}" class="cta-button">Take Survey</a>
+                    <button onclick="copyToClipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'take_survey' survey.slug %}')">
+                        Copy Link
+                    </button>
+                    <button onclick="openPreview('{{ survey.id }}')">Preview</button>
+                </div>
+            </div>
+            {% empty %}
+            <p>No surveys available yet.</p>
+            {% endfor %}
+        </div>
+    </main>
+    {% endblock %}
+
+    <!-- 🔹 Preview Modal -->
+    <div id="preview-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closePreview()">&times;</span>
+            <div id="modal-body">
+                <h2>Survey Preview</h2>
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    {% block footer %}
+    <footer>
+        <p>&copy; 2025 Askly - All Rights Reserved</p>
+    </footer>
+    {% endblock %}
+</body>
+</html>

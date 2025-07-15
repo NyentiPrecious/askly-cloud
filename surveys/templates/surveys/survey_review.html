@@ -1,0 +1,283 @@
+{% extends "surveys/base.html" %}
+{% load static %}
+{% block title %}Preview Survey - Askly{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --purple-main: #7c3aed;
+    --purple-light: #a78bfa;
+    --bg-dark: #1e1e2f;
+    --input-dark: #2a235d;
+    --text-dark: #ffffff;
+    --tag-bg-dark: #3b2f5e;
+  }
+
+  html, body {
+    font-size: 16px !important;
+  }
+
+  nav, nav a {
+    font-size: 1rem !important;
+  }
+
+  .preview-wrapper {
+    max-width: 860px;
+    margin: 60px auto;
+    padding: 50px 40px;
+    background: rgba(250, 245, 255, 0.65);
+    backdrop-filter: blur(16px);
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(124, 58, 237, 0.12);
+    font-family: 'Poppins', sans-serif;
+    transition: background 0.3s ease;
+    color: var(--text-dark);
+  }
+
+  .dark .preview-wrapper {
+    background: rgba(35, 25, 70, 0.85);
+    color: var(--text-dark);
+  }
+
+  .preview-wrapper h2 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 1.2rem;
+    background: linear-gradient(90deg, var(--purple-main), var(--purple-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .survey-title-display {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #4c1d95;
+    letter-spacing: 0.5px;
+  }
+
+  .dark .survey-title-display {
+    color: #e9d5ff;
+  }
+
+  .progress-bar {
+    height: 8px;
+    width: 100%;
+    background: #e9d5ff;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2.2rem;
+  }
+
+  .progress-fill {
+    width: 80%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple-main), var(--purple-light));
+    transition: width 0.5s ease;
+  }
+
+  .question-preview {
+    margin-bottom: 40px;
+  }
+
+  .question-type-tag {
+    font-size: 0.85rem;
+    color: var(--purple-main);
+    background: #ede9fe;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+
+  .dark .question-type-tag {
+    background: var(--tag-bg-dark);
+    color: var(--purple-light);
+  }
+
+  .question-preview label {
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 10px;
+    color: #4c1d95;
+  }
+
+  .dark .question-preview label {
+    color: #e9d5ff;
+  }
+
+  .question-preview input,
+  .question-preview textarea,
+  .question-preview select {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 1rem;
+    margin-top: 6px;
+    margin-bottom: 10px;
+  }
+
+  .dark .question-preview input,
+  .dark .question-preview textarea,
+  .dark .question-preview select {
+    background-color: var(--input-dark);
+    color: var(--text-dark);
+    border-color: #555;
+  }
+
+  .question-preview input[type="checkbox"],
+  .question-preview input[type="radio"] {
+    width: auto;
+    margin-right: 8px;
+    transform: scale(1.1);
+  }
+
+  .btn-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .btn-back,
+  .btn-share,
+  .btn-done {
+    padding: 14px 30px;
+    background: var(--purple-main);
+    color: white;
+    border-radius: 32px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.25);
+  }
+
+  .btn-back:hover,
+  .btn-share:hover,
+  .btn-done:hover {
+    background: #5b21b6;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 640px) {
+    .btn-group {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn-back,
+    .btn-share,
+    .btn-done {
+      width: 100%;
+      text-align: center;
+    }
+  }
+    nav {
+    font-size: 1rem !important;
+    font-weight: 500;
+  }
+
+  nav a {
+    font-size: 1rem !important;
+    font-weight: 600;
+    color: #4c1d95;
+    transition: color 0.3s ease;
+  }
+
+  .dark nav a {
+    color: #e9d5ff;
+  }
+
+  nav a:hover {
+    color: var(--purple-main);
+  }
+
+.survey-live-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #4c1d95;
+  display: inline-block;
+}
+
+.dark .survey-live-title {
+  color: #e9d5ff;
+}
+
+</style>
+
+<div class="preview-wrapper" data-aos="fade-up">
+  <h2>📋 Live Survey Preview</h2>
+
+  <p class="survey-title-display"><strong>Survey:</strong> <span class="survey-live-title">{{ survey.title }}</span></p>
+
+
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+
+  {% if survey.questions.exists %}
+    <form>
+    {% for question in survey.questions.all %}
+      <div class="question-preview">
+        <span class="question-type-tag">{{ question.type|title }}</span>
+        <label><strong>Q{{ forloop.counter }}:</strong> {{ question.text }} {% if question.required %}<span style="color:red;">*</span>{% endif %}</label>
+
+        {% if question.type == "text" %}
+          <input type="text" placeholder="e.g., I found the experience valuable.">
+
+        {% elif question.type == "rating" %}
+          <select>
+            <option value="1">⭐ 1 - Poor</option>
+            <option value="2">⭐ 2 - Fair</option>
+            <option value="3">⭐ 3 - Good</option>
+            <option value="4">⭐ 4 - Very Good</option>
+            <option value="5">⭐ 5 - Excellent</option>
+          </select>
+
+        {% elif question.type == "multiple_choice" %}
+          {% for opt in question.options %}
+            {% if question.allow_multiple %}
+              <label><input type="checkbox" name="q{{ forloop.parentloop.counter }}"> {{ opt }}</label><br>
+            {% else %}
+              <label><input type="radio" name="q{{ forloop.parentloop.counter }}"> {{ opt }}</label><br>
+            {% endif %}
+          {% endfor %}
+
+        {% elif question.type == "checkbox" %}
+          {% for opt in question.options %}
+            <label><input type="checkbox"> {{ opt }}</label><br>
+          {% endfor %}
+        {% endif %}
+      </div>
+    {% endfor %}
+    </form>
+  {% else %}
+    <p>No questions found in this survey.</p>
+  {% endif %}
+
+  <div class="btn-group">
+    <a href="{% url 'edit_template_survey' template_key=survey.template_key %}" class="btn-back">← Back to Edit</a>
+    <a href="#" onclick="copyLink()" class="btn-share">📎 Copy Share Link</a>
+    <a href="{% url 'thank_you' survey.id %}" class="btn-done">✅ Done</a>
+  </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 1000, once: true });
+
+  function copyLink() {
+    const surveySlug = "{{ survey.slug }}";
+    const baseUrl = window.location.origin;
+    const fullLink = `${baseUrl}/survey/${surveySlug}/`;
+    navigator.clipboard.writeText(fullLink);
+    alert("✅ Survey link copied to clipboard!");
+  }
+</script>
+{% endblock %}

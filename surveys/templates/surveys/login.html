@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login - Askly</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@motionone/dom"></script>
+
+    <style>
+        body.light {
+            background-color: #f9f9fc;
+            color: #1f1f1f;
+        }
+
+        body.dark {
+            background-color: #121212;
+            color: #f1f1f1;
+        }
+
+        label {
+            @apply block mb-1 font-medium text-gray-700 dark:text-gray-300;
+        }
+    </style>
+</head>
+<body class="light transition-colors duration-500">
+
+    <!-- Main Wrapper -->
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div id="login-card" class="w-full max-w-md bg-white dark:bg-zinc-900 shadow-xl rounded-2xl p-10 relative overflow-hidden">
+            <div class="absolute -top-5 -left-5 w-24 h-24 bg-purple-500 blur-3xl opacity-30 rounded-full pointer-events-none"></div>
+
+            <h2 class="text-3xl font-extrabold text-center mb-6 text-purple-600 dark:text-purple-400">Welcome Back</h2>
+            <p class="text-center text-gray-600 dark:text-gray-300 mb-8">Login to your Askly account</p>
+
+            <!-- Form -->
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="relative">
+                    <label for="{{ field.id_for_label }}" class="sr-only">{{ field.label }}</label>
+
+                    <div class="relative">
+                        <!-- Icon -->
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            {% if "username" in field.name %}
+                            <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4.992 4.992 0 0112 14a4.992 4.992 0 016.879 3.804M12 14v6m0-6a4.992 4.992 0 01-4.879-3.804M12 14v6" />
+                            </svg>
+                            {% elif "password" in field.name %}
+                            <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m0-6a2 2 0 012 2v4H10v-4a2 2 0 012-2z" />
+                            </svg>
+                            {% endif %}
+                        </div>
+
+                        <!-- Input -->
+                        <input 
+                            type="{{ field.field.widget.input_type }}" 
+                            name="{{ field.name }}" 
+                            id="{{ field.id_for_label }}"
+                            value="{{ field.value|default_if_none:'' }}"
+                            class="peer pl-10 pr-4 pt-6 pb-2 w-full text-sm bg-white dark:bg-zinc-800 text-gray-900 dark:text-white border border-gray-300 dark:border-zinc-700 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300" 
+                            placeholder=" "
+                            required
+                        />
+
+                        <!-- Floating Label -->
+                        <label for="{{ field.id_for_label }}"
+                            class="absolute left-10 top-2.5 text-gray-500 dark:text-gray-400 text-sm transition-all duration-300 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 dark:peer-placeholder-shown:text-gray-500 peer-focus:top-2.5 peer-focus:text-sm peer-focus:text-purple-600 dark:peer-focus:text-purple-400">
+                            {{ field.label }}
+                        </label>
+                    </div>
+
+                    {% if field.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ field.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit"
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-xl shadow-md transition-all duration-300">
+                    Log In
+                </button>
+            </form>
+
+            <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+                Don't have an account?
+                <a href="{% url 'signup' %}" class="text-purple-600 dark:text-purple-400 hover:underline font-medium">
+                    Sign up here
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <div class="fixed top-4 right-4 z-50">
+        <button id="toggleTheme"
+            class="p-2 bg-gray-100 dark:bg-zinc-800 rounded-full shadow hover:shadow-lg transition-all duration-300">
+            🌗
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Dynamic Tailwind styling
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input').forEach(el => {
+                el.removeAttribute('placeholder');
+            });
+        });
+
+        // Light/Dark mode
+        const toggleBtn = document.getElementById("toggleTheme");
+        const body = document.body;
+
+        function setTheme(theme) {
+            body.className = theme;
+            localStorage.setItem("theme", theme);
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            const newTheme = body.classList.contains("dark") ? "light" : "dark";
+            setTheme(newTheme);
+        });
+
+        setTheme(localStorage.getItem("theme") || "light");
+
+        // Animate login card
+        import('@motionone/dom').then(({ animate }) => {
+            animate("#login-card", { opacity: [0, 1], y: [-20, 0] }, { duration: 0.6, easing: "ease-out" });
+        });
+    </script>
+</body>
+</html>

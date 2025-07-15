@@ -1,0 +1,402 @@
+{% extends "surveys/base.html" %}
+{% block title %}{{ survey.title }} - Fill Survey{% endblock %}
+
+{% block content %}
+
+{% if branding %}
+<style>
+  :root {
+    --primary: {{ branding.color }};
+    --primary-light: #a78bfa;
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-bg-hover: rgba(255, 255, 255, 0.25);
+    --glass-dark-bg: rgba(35, 25, 70, 0.6);
+    --text-light: #f3f3f9;
+    --text-dark: #1e1b4b;
+    --error-color: #ef4444;
+    --font-family: '{{ branding.font }}', 'Poppins', sans-serif;
+  }
+
+  /* Background with subtle gradient */
+  body {
+    margin: 0;
+    padding: 3rem 1rem;
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    color: var(--text-light);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  body.dark {
+    background: linear-gradient(135deg, #2a2050, #4b3b80);
+    color: var(--text-light);
+  }
+
+  /* Container with glassmorphism */
+  .editor-wrapper {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    max-width: 720px;
+    width: 100%;
+    padding: 3rem 3.5rem;
+    box-shadow:
+      0 4px 30px rgba(0, 0, 0, 0.1),
+      0 0 10px rgba(124, 58, 237, 0.3);
+    transition: background 0.3s ease;
+    color: var(--text-light);
+  }
+
+  body.dark .editor-wrapper {
+    background: var(--glass-dark-bg);
+    box-shadow:
+      0 4px 30px rgba(0, 0, 0, 0.3),
+      0 0 15px rgba(167, 139, 250, 0.6);
+  }
+
+  /* Logo */
+  .editor-wrapper img {
+    display: block;
+    margin: 0 auto 2rem;
+    max-height: 80px;
+    filter: drop-shadow(0 2px 6px rgba(124, 58, 237, 0.4));
+  }
+
+  /* Title */
+  h2 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 1rem;
+    background: linear-gradient(90deg, #9333ea, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1.2px;
+    text-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
+  }
+
+  /* Description */
+  p.description {
+    font-size: 1.2rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+  }
+
+  /* Error message */
+  p.error-message {
+    color: var(--error-color);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    text-shadow: 0 0 3px var(--error-color);
+  }
+
+  /* Question cards */
+  .question-card {
+    background: var(--glass-bg);
+    border-radius: 20px;
+    padding: 1.8rem 2.2rem;
+    margin-bottom: 2rem;
+    box-shadow:
+      0 8px 30px rgba(124, 58, 237, 0.1);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  body.dark .question-card {
+    background: var(--glass-dark-bg);
+    box-shadow:
+      0 8px 30px rgba(167, 139, 250, 0.25);
+  }
+
+  .question-card:hover {
+    background: var(--glass-bg-hover);
+    box-shadow:
+      0 12px 40px rgba(167, 139, 250, 0.5);
+  }
+
+  /* Labels with floating effect */
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin-bottom: 0.8rem;
+    position: relative;
+    user-select: none;
+    color: var(--text-light);
+  }
+
+  label span.required-star {
+    color: var(--error-color);
+    margin-left: 0.3rem;
+  }
+
+  /* Inputs styling */
+  input[type="text"],
+  select {
+    width: 100%;
+    padding: 0.75rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    background: rgba(255, 255, 255, 0.25);
+    color: var(--text-light);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.15);
+    transition:
+      background 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease,
+      transform 0.2s ease;
+    font-family: var(--font-family);
+  }
+
+  input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  input[type="text"]:focus,
+  select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.45);
+    border-color: var(--primary);
+    box-shadow:
+      0 0 15px var(--primary),
+      inset 0 0 12px rgba(255, 255, 255, 0.5);
+    transform: scale(1.02);
+  }
+
+  body.dark input[type="text"],
+  body.dark select {
+    background: rgba(20, 15, 50, 0.5);
+    color: var(--text-light);
+    box-shadow: inset 0 0 15px rgba(167, 139, 250, 0.25);
+  }
+
+  /* Custom radio and checkbox styling */
+  input[type="radio"],
+  input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    border: 2.5px solid var(--primary);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: relative;
+    vertical-align: middle;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  input[type="checkbox"] {
+    border-radius: 6px;
+  }
+
+  input[type="radio"]:checked::before,
+  input[type="checkbox"]:checked::before {
+    content: "";
+    position: absolute;
+    top: 3.5px;
+    left: 3.5px;
+    width: 10px;
+    height: 10px;
+    background: var(--primary);
+    border-radius: 50%;
+  }
+
+  input[type="checkbox"]:checked::before {
+    border-radius: 4px;
+  }
+
+  input[type="radio"]:hover,
+  input[type="checkbox"]:hover {
+    border-color: #9333ea;
+  }
+
+  /* Option labels */
+  .option-label {
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    color: var(--text-light);
+  }
+
+  /* Submit button with gradient and shine */
+  .cta-button {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 2.5rem auto 0;
+    padding: 1.2rem 0;
+    font-weight: 800;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #9333ea, #a78bfa);
+    color: white;
+    box-shadow: 0 10px 30px rgba(167, 139, 250, 0.7);
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    transition: box-shadow 0.4s ease, transform 0.2s ease;
+  }
+
+  .cta-button::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -25%;
+    width: 150%;
+    height: 200%;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.4), transparent 80%);
+    transform: rotate(25deg);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .cta-button:hover::before {
+    opacity: 1;
+  }
+
+  .cta-button:hover {
+    box-shadow: 0 15px 40px rgba(167, 139, 250, 0.9);
+    transform: translateY(-3px);
+  }
+
+  .cta-button:active {
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+    transform: translateY(-1px);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    body {
+      padding: 2rem 1rem;
+      align-items: stretch;
+    }
+
+    .editor-wrapper {
+      padding: 2.5rem 2rem;
+      border-radius: 18px;
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.12);
+    }
+
+    h2 {
+      font-size: 2rem;
+    }
+
+    p.description {
+      font-size: 1rem;
+    }
+
+    .question-card {
+      padding: 1.2rem 1.6rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .cta-button {
+      max-width: 100%;
+      font-size: 1.1rem;
+      padding: 1rem 0;
+    }
+  }
+</style>
+{% endif %}
+
+<div class="editor-wrapper" role="main" aria-labelledby="surveyTitle">
+  <!-- Branding logo -->
+  {% if branding.logo %}
+    <img src="{{ branding.logo.url }}" alt="Survey Logo" />
+  {% endif %}
+
+  <h2 id="surveyTitle">{{ survey.title }}</h2>
+  {% if survey.description %}
+    <p class="description">{{ survey.description }}</p>
+  {% endif %}
+
+  {% if error %}
+    <p class="error-message" role="alert">{{ error }}</p>
+  {% endif %}
+
+  <form method="POST" novalidate>
+    {% csrf_token %}
+    {% for question in survey.questions.all %}
+      <div class="question-card">
+        <label for="question_{{ question.id }}">
+          {{ forloop.counter }}. {{ question.text }}
+          {% if question.required %}
+            <span class="required-star">*</span>
+          {% endif %}
+        </label>
+
+        {% if question.type == "text" %}
+          <input
+            id="question_{{ question.id }}"
+            type="text"
+            name="question_{{ question.id }}"
+            aria-required="{{ question.required|yesno:'true,false' }}"
+            {% if question.required %} required {% endif %}
+          />
+
+        {% elif question.type == "multiple_choice" %}
+          {% for option in question.options %}
+            <div>
+              <input
+                type="radio"
+                id="question_{{ question.id }}_option_{{ forloop.counter }}"
+                name="question_{{ question.id }}"
+                value="{{ option }}"
+                aria-required="{{ question.required|yesno:'true,false' }}"
+                {% if question.required %} required {% endif %}
+              />
+              <label class="option-label" for="question_{{ question.id }}_option_{{ forloop.counter }}">{{ option }}</label>
+            </div>
+          {% endfor %}
+
+        {% elif question.type == "checkbox" %}
+          {% for option in question.options %}
+            <div>
+              <input
+                type="checkbox"
+                id="question_{{ question.id }}_option_{{ forloop.counter }}"
+                name="question_{{ question.id }}"
+                value="{{ option }}"
+                {% if question.required %} required {% endif %}
+              />
+              <label class="option-label" for="question_{{ question.id }}_option_{{ forloop.counter }}">{{ option }}</label>
+            </div>
+          {% endfor %}
+
+        {% elif question.type == "rating" %}
+          <select
+            id="question_{{ question.id }}"
+            name="question_{{ question.id }}"
+            aria-required="{{ question.required|yesno:'true,false' }}"
+            {% if question.required %} required {% endif %}
+          >
+            <option value="">Select rating</option>
+            {% for r in "12345" %}
+              <option value="{{ r }}">{{ r }}</option>
+            {% endfor %}
+          </select>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="cta-button" aria-label="Submit survey">Submit Survey</button>
+  </form>
+</div>
+
+{% endblock %}

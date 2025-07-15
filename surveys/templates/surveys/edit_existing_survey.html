@@ -1,0 +1,271 @@
+{% extends "surveys/base.html" %}
+{% block title %}Edit Existing Survey{% endblock %}
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>AOS.init({ duration: 800, once: true });</script>
+
+<style>
+  :root{
+    --purple-main:#7c3aed;
+    --purple-light:#a78bfa;
+    --glass-light:rgba(245,243,255,0.55);
+    --glass-dark:rgba(35,25,70,0.8);
+    --card-light:#ffffff;
+    --card-dark:rgba(45,30,90,0.85);
+    --text-light:#1e1b4b;
+    --text-dark:#ececff;
+    --error:#ef4444;
+  }
+
+  body{font-family:"Poppins",sans-serif;}
+
+  /* outer glass wrapper */
+  .timeline-wrapper{
+    max-width:860px;margin:80px auto;
+    padding:3rem 2.5rem;
+    background:var(--glass-light);
+    backdrop-filter:blur(14px);
+    border-radius:24px;
+    box-shadow:0 15px 50px rgba(124,58,237,.15);
+    color:var(--text-light);
+  }
+  .dark .timeline-wrapper{
+    background:var(--glass-dark);
+    color:var(--text-dark);
+    box-shadow:0 15px 50px rgba(124,58,237,.55);
+  }
+
+  h2{
+    text-align:center;font-size:2.2rem;font-weight:700;
+    margin-bottom:2.2rem;
+    background:linear-gradient(90deg,var(--purple-main),var(--purple-light));
+    -webkit-background-clip:text;color:transparent;
+  }
+
+  /* inputs */
+  input[type=text],select,textarea{
+    width:100%;padding:.9rem 1.1rem;font-size:1rem;
+    border-radius:14px;margin-top:.6rem;border:1.5px solid #ddd6fe;
+    transition:border-color .25s,background .25s;
+    background:#fff;color:var(--text-light);
+  }
+  textarea{resize:vertical;min-height:90px}
+  .dark input,.dark select,.dark textarea{
+    background:#2e2b50;color:var(--text-dark);border-color:#6659ff55;
+  }
+  label{font-weight:600;margin-top:1rem;display:block}
+
+  /* question cards */
+  .question-timeline{display:flex;flex-direction:column;gap:2rem}
+  .question-step{
+    position:relative;padding:1.7rem 2rem;
+    border-radius:22px;background:var(--card-light);
+    box-shadow:0 6px 22px rgba(124,58,237,.08);
+    transition:box-shadow .3s,transform .3s;
+  }
+  .question-step:hover{box-shadow:0 12px 30px rgba(124,58,237,.2)}
+  .dark .question-step{background:var(--card-dark);box-shadow:0 6px 22px rgba(124,58,237,.35)}
+  .q-label{
+    position:absolute;left:-46px;top:24px;
+    width:40px;height:40px;border-radius:50%;
+    background:var(--purple-main);color:#fff;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 12px rgba(124,58,237,.4);
+  }
+
+  /* buttons */
+  .btn{
+    background:var(--purple-main);color:#fff;
+    padding:1rem 2.6rem;border:none;border-radius:50px;
+    font-weight:600;transition:.3s;box-shadow:0 6px 20px rgba(124,58,237,.25);
+    cursor:pointer;text-align:center;text-decoration:none;
+  }
+  .btn:hover:not(:disabled){background:#5b21b6;transform:translateY(-3px)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .remove-btn{
+    margin-top:1rem;background:var(--error);padding:.45rem .95rem;
+    border-radius:10px;font-size:.9rem;color:#fff;transition:.3s;border:none;
+  }
+  .remove-btn:hover{background:#b91c1c}
+
+  /* error */
+  .error-msg{color:var(--error);font-size:.9rem;margin-top:.3rem;display:none}
+
+  /* modal */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,.45);
+    display:none;align-items:center;justify-content:center;z-index:9999;
+  }
+  .modal-backdrop.active{display:flex}
+  .modal-content{
+    background:#fff;padding:1.8rem 2.2rem;border-radius:16px;
+    box-shadow:0 8px 30px rgba(124,58,237,.3);text-align:center;
+    max-width:380px;color:var(--text-light);
+  }
+  .dark .modal-content{background:#2a2348;color:var(--text-dark)}
+  .modal-buttons{margin-top:1.4rem;display:flex;gap:1rem;justify-content:center}
+  .modal-buttons button{padding:.6rem 1.4rem;border-radius:10px;font-weight:600;border:none;cursor:pointer;transition:.25s}
+  .cancel-btn{background:#ddd6fe;color:var(--text-light)}
+  .cancel-btn:hover{background:#c4b5fd}
+  .confirm-btn{background:var(--purple-main);color:#fff}
+  .confirm-btn:hover{background:#5b21b6}
+
+  /* mobile */
+  @media(max-width:600px){
+    .timeline-wrapper{margin:40px 12px;padding:2rem 1.2rem}
+    .btn{width:100%;margin-top:1rem}
+  }
+</style>
+
+<div class="timeline-wrapper" data-aos="fade-up">
+  <h2>🧭 Edit Survey</h2>
+
+  <form id="editSurveyForm" action="#" method="POST" novalidate>
+    {% csrf_token %}
+    <input id="surveyTitle" name="title" type="text" placeholder="Survey Title" value="{{ survey.title }}" required>
+
+    <textarea id="surveyDescription" name="description" placeholder="Survey Description" rows="3">{{ survey.description }}</textarea>
+
+    <div id="questionContainer" class="question-timeline" aria-live="polite">
+      {% for q in survey.questions.all %}
+      <div class="question-step" data-aos="fade-up">
+        <div class="q-label">Q{{ forloop.counter }}</div>
+
+        <label for="qtext{{ forloop.counter }}">Question</label>
+        <input id="qtext{{ forloop.counter }}" name="question_texts" type="text" value="{{ q.text }}" required>
+        <div class="error-msg">Question text cannot be empty.</div>
+
+        <label for="qtype{{ forloop.counter }}">Type</label>
+        <select id="qtype{{ forloop.counter }}" name="question_types">
+          <option value="text" {% if q.type == "text" %}selected{% endif %}>Text</option>
+          <option value="multiple_choice" {% if q.type == "multiple_choice" %}selected{% endif %}>Multiple Choice</option>
+          <option value="checkbox" {% if q.type == "checkbox" %}selected{% endif %}>Checkbox</option>
+          <option value="rating" {% if q.type == "rating" %}selected{% endif %}>Rating</option>
+        </select>
+
+        <label><input type="checkbox" name="allow_multiple" {% if q.allow_multiple %}checked{% endif %}> Allow multiple answers</label>
+        <label><input type="checkbox" name="required_flags" {% if q.required %}checked{% endif %}> Required</label>
+
+        <label>Options (comma‑separated)</label>
+        <input name="question_options" type="text" value="{{ q.options|join:', ' }}">
+
+        <button type="button" class="remove-btn">Remove</button>
+      </div>
+      {% endfor %}
+    </div>
+
+    <button type="button" id="addQuestionBtn" class="btn">+ Add Question</button>
+    <button type="submit" id="saveBtn" class="btn" disabled>Save Changes</button>
+  </form>
+</div>
+
+<!-- confirm modal -->
+<div class="modal-backdrop" id="confirmModal" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <h3>Remove this question?</h3>
+    <p>This can’t be undone.</p>
+    <div class="modal-buttons">
+      <button class="cancel-btn" type="button">Cancel</button>
+      <button class="confirm-btn" type="button">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script>
+/* --- drag & reorder --- */
+const container=document.getElementById('questionContainer');
+Sortable.create(container,{animation:150,handle:'.q-label',ghostClass:'sortable-ghost',onEnd:updateLabels});
+
+/* --- create card helper --- */
+function cardHTML(i,data={}){return`
+<div class="question-step" data-aos="fade-up">
+ <div class="q-label">Q${i}</div>
+ <label for="qtext${i}">Question</label>
+ <input id="qtext${i}" name="question_texts" type="text" value="${data.text||''}" required>
+ <div class="error-msg">Question text cannot be empty.</div>
+ <label for="qtype${i}">Type</label>
+ <select id="qtype${i}" name="question_types">
+   <option value="text"${data.type==='text'?' selected':''}>Text</option>
+   <option value="multiple_choice"${data.type==='multiple_choice'?' selected':''}>Multiple Choice</option>
+   <option value="checkbox"${data.type==='checkbox'?' selected':''}>Checkbox</option>
+   <option value="rating"${data.type==='rating'?' selected':''}>Rating</option>
+ </select>
+ <label><input type="checkbox" name="allow_multiple"${data.allow_multiple?' checked':''}> Allow multiple answers</label>
+ <label><input type="checkbox" name="required_flags"${data.required?' checked':''}> Required</label>
+ <label>Options (comma‑separated)</label>
+ <input name="question_options" type="text" value="${data.options||''}">
+ <button type="button" class="remove-btn">Remove</button>
+</div>`}
+
+/* --- add new --- */
+document.getElementById('addQuestionBtn').onclick=()=>{
+  const i=container.children.length+1;
+  container.insertAdjacentHTML('beforeend',cardHTML(i));
+  updateLabels();validate();saveDraft();
+  AOS.refresh();
+};
+
+/* --- labels --- */
+function updateLabels(){
+  [...container.children].forEach((c,i)=>{
+    c.querySelector('.q-label').textContent='Q'+(i+1);
+    c.querySelector('label[for^=\"qtext\"]').htmlFor='qtext'+(i+1);
+    c.querySelector('input[name=\"question_texts\"]').id='qtext'+(i+1);
+  });
+}
+
+/* --- remove with modal --- */
+const modal=document.getElementById('confirmModal');
+let toRemove=null;
+container.addEventListener('click',e=>{
+ if(e.target.classList.contains('remove-btn')){
+   toRemove=e.target.closest('.question-step');modal.classList.add('active');
+ }
+});
+modal.querySelector('.cancel-btn').onclick=()=>modal.classList.remove('active');
+modal.querySelector('.confirm-btn').onclick=()=>{
+  if(toRemove){toRemove.remove();updateLabels();validate();saveDraft();}
+  modal.classList.remove('active');toRemove=null;
+};
+
+/* --- validation --- */
+const form=document.getElementById('editSurveyForm');
+const saveBtn=document.getElementById('saveBtn');
+function validate(){
+  let ok=!!form.title.value.trim();
+  container.querySelectorAll('.question-step').forEach(s=>{
+    const inp=s.querySelector('input[name=\"question_texts\"]');
+    const err=s.querySelector('.error-msg');
+    if(!inp.value.trim()){err.style.display='block';ok=false;}else{err.style.display='none';}
+  });
+  saveBtn.disabled=!ok;
+}
+form.addEventListener('input',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')validate();saveDraft();});
+
+/* --- auto‑save draft --- */
+const key='editSurveyDraft_'+{{ survey.id }};
+function saveDraft(){
+  const data={title:form.title.value,description:form.description.value,questions:[...container.children].map(c=>({
+    text:c.querySelector('input[name=\"question_texts\"]').value,
+    type:c.querySelector('select').value,
+    allow_multiple:c.querySelector('input[name=\"allow_multiple\"]').checked,
+    required:c.querySelector('input[name=\"required_flags\"]').checked,
+    options:c.querySelector('input[name=\"question_options\"]').value
+  }))};
+  localStorage.setItem(key,JSON.stringify(data));
+}
+function loadDraft(){
+  const d=localStorage.getItem(key);if(!d)return;
+  const data=JSON.parse(d);form.title.value=data.title||'';form.description.value=data.description||'';
+  container.innerHTML='';data.questions.forEach((q,i)=>container.insertAdjacentHTML('beforeend',cardHTML(i+1,q)));
+}
+window.addEventListener('load',()=>{loadDraft();updateLabels();validate();});
+
+/* --- prevent submit if invalid --- */
+form.addEventListener('submit',e=>{if(saveBtn.disabled){e.preventDefault();alert('Fill all required fields');}});
+</script>
+{% endblock %}

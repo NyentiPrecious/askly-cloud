@@ -1,0 +1,519 @@
+{% extends "surveys/base.html" %}
+{% load static %}
+{% block title %}Customize {{ template.title }}{% endblock %}
+{% block content %}
+
+<!-- AOS Animation -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init({ duration: 700, once: true });</script>
+
+<style>
+  :root {
+    --purple-main: #7c3aed;
+    --purple-light: #a78bfa;
+    --button-dark-bg: #5b21b6;
+    --button-light-bg: #8b5cf6;
+    --card-bg-light: rgba(245, 243, 255, 0.5);
+    --card-bg-dark: rgba(35, 25, 70, 0.6);
+    --input-dark-bg: #2e2e33;
+    --text-dark: #ffffff;
+    --text-light: #1e1b4b;
+    --blur: blur(15px);
+    --glow-shadow: 0 6px 18px rgba(124, 58, 237, 0.4);
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Container */
+  .tab-container {
+    max-width: 960px;
+    margin: 5rem auto 6rem;
+    background: linear-gradient(135deg, rgba(199, 186, 255, 0.25), rgba(255, 255, 255, 0.15));
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(124, 58, 237, 0.2);
+    backdrop-filter: var(--blur);
+    overflow: hidden;
+    padding: 2.5rem 3rem 3rem;
+    color: var(--text-light);
+    transition: background-color 0.3s ease;
+  }
+  .dark .tab-container {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(35, 25, 70, 0.7));
+    color: var(--text-dark);
+    box-shadow: 0 15px 50px rgba(124, 58, 237, 0.7);
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid rgba(124, 58, 237, 0.3);
+    margin-bottom: 2rem;
+  }
+
+  .tab-button {
+    flex: 1;
+    padding: 1.3rem 0;
+    font-size: 1.25rem;
+    text-align: center;
+    font-weight: 700;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .tab-button.active {
+    background: var(--purple-main);
+    color: #fff;
+    box-shadow: var(--glow-shadow);
+  }
+
+  .dark .tab-button {
+    color: var(--text-dark);
+  }
+
+  /* Content */
+  .tab-content {
+    padding: 0;
+  }
+
+  .tab-pane {
+    display: none;
+  }
+
+  .tab-pane.active {
+    display: block;
+  }
+
+  /* Inputs */
+  input[type="text"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    margin: 1rem 0 2rem;
+    border: 1.8px solid rgba(124, 58, 237, 0.3);
+    background: #fff;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--purple-main);
+    box-shadow: 0 0 8px var(--purple-light);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .dark input,
+  .dark select,
+  .dark textarea {
+    background: var(--input-dark-bg);
+    color: white;
+    border-color: rgba(124, 58, 237, 0.7);
+  }
+
+  /* Labels */
+  label {
+    font-weight: 700;
+    display: block;
+    color: var(--purple-main);
+  }
+
+  /* Question box */
+  .question-box {
+    background: rgba(245, 243, 255, 0.4);
+    border-radius: 24px;
+    padding: 2rem 2.2rem 2.2rem;
+    border: 2px solid rgba(124, 58, 237, 0.15);
+    margin-bottom: 2.5rem;
+    position: relative;
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .question-box:hover {
+    box-shadow: var(--glow-shadow);
+  }
+
+  .dark .question-box {
+    background: var(--card-bg-dark);
+    border-color: rgba(199, 186, 255, 0.3);
+    box-shadow: 0 6px 20px rgba(199, 186, 255, 0.25);
+  }
+  .dark .question-box:hover {
+    box-shadow: 0 10px 30px rgba(199, 186, 255, 0.6);
+  }
+
+  /* Remove button */
+  .remove-btn {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    color: #ef4444;
+    cursor: pointer;
+    font-weight: 900;
+    transition: transform 0.2s ease;
+  }
+
+  .remove-btn:hover {
+    transform: scale(1.3);
+  }
+
+  /* Buttons */
+  .btn {
+    background: var(--purple-main);
+    color: white;
+    padding: 1.2rem 3rem;
+    border-radius: 50px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--glow-shadow);
+    text-decoration: none !important;
+    display: inline-block;
+  }
+
+  .btn:hover {
+    background: var(--button-dark-bg);
+    box-shadow: 0 12px 30px rgba(92, 33, 182, 0.7);
+    transform: translateY(-3px);
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  /* Carousel Section */
+  .other-templates-section {
+    max-width: 100%;
+    margin: 6rem auto 8rem;
+    padding: 0 2.5rem;
+  }
+
+  .carousel-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  .carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 1.4rem;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 0.8rem;
+    scroll-padding-left: 2.5rem;
+  }
+
+  .carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carousel-card {
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+    background: rgba(245, 243, 255, 0.4);
+    border-radius: 24px;
+    padding: 1.8rem 2rem;
+    text-align: center;
+    border: 2px solid rgba(124, 58, 237, 0.2);
+    box-shadow: 0 8px 22px rgba(124, 58, 237, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: var(--purple-main);
+  }
+
+  .carousel-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--glow-shadow);
+  }
+
+  .carousel-card h4 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .carousel-card p {
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+    color: var(--text-light);
+  }
+
+  .carousel-card a.btn {
+    font-size: 1rem;
+    padding: 0.8rem 2.4rem;
+  }
+
+  /* Carousel buttons */
+  .carousel-nav {
+    display: none;
+    background: var(--purple-main);
+    color: white;
+    border: none;
+    padding: 0.85rem 1.2rem;
+    border-radius: 50%;
+    font-size: 1.6rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: var(--glow-shadow);
+    user-select: none;
+    position: relative;
+    z-index: 10;
+  }
+
+  .carousel-nav:hover {
+    background: var(--button-dark-bg);
+    transform: scale(1.1);
+  }
+
+  @media screen and (min-width: 768px) {
+    .carousel-nav {
+      display: inline-block;
+    }
+  }
+  /* Dark mode tweaks */
+
+.dark .tab-container {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(25, 15, 60, 0.85));
+  color: #eee;
+  box-shadow: 0 15px 50px rgba(124, 58, 237, 0.8);
+}
+
+.dark label {
+  color: #b9a8ff; /* lighter purple for labels */
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background: #3b3760;
+  color: #e0d9ff;
+  border-color: #7157d9;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #b5a8ffcc;
+}
+
+.dark .question-box {
+  background: rgba(35, 25, 70, 0.9);
+  border-color: #7157d9;
+  color: #ddd6fe;
+  box-shadow: 0 6px 20px rgba(199, 186, 255, 0.45);
+}
+
+.dark .question-box input,
+.dark .question-box select,
+.dark .question-box textarea {
+  background: #4a447d;
+  color: #eee;
+  border-color: #8c7dfd;
+}
+
+.dark .question-box input::placeholder,
+.dark .question-box textarea::placeholder {
+  color: #b5a8ffcc;
+}
+
+.dark .carousel-card {
+  background: rgba(45, 30, 90, 0.85);
+  border-color: #8b76ff;
+  color: #d7cdfd;
+  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.6);
+}
+
+.dark .carousel-card h4 {
+  color: #c8baff;
+}
+
+.dark .carousel-card p {
+  color: #c4bafcdd;
+}
+
+.dark .carousel-card a.btn {
+  background: #7c3aed;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.8);
+}
+
+.dark .carousel-card a.btn:hover {
+  background: #5b21b6;
+  box-shadow: 0 10px 30px rgba(92, 33, 182, 0.9);
+}
+
+/* Tab buttons in dark */
+.dark .tab-button {
+  color: #ccc;
+}
+
+.dark .tab-button.active {
+  background: #7c3aed;
+  color: white;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.9);
+}
+
+/* Remove button */
+.dark .remove-btn {
+  color: #f87171;
+}
+
+
+</style>
+
+<div class="tab-container" data-aos="fade-up">
+  <div class="tabs" role="tablist" aria-label="Survey customization tabs">
+    <button class="tab-button active" onclick="switchTab('info')" role="tab" aria-selected="true" aria-controls="info" id="tab-info">Survey Info</button>
+    <button class="tab-button" onclick="switchTab('questions')" role="tab" aria-selected="false" aria-controls="questions" id="tab-questions">Questions</button>
+  </div>
+
+  <form method="POST" novalidate>
+    {% csrf_token %}
+    <div class="tab-content">
+
+      <!-- Survey Info -->
+      <section id="info" class="tab-pane active" role="tabpanel" aria-labelledby="tab-info">
+        <label for="survey-title">Survey Title</label>
+        <input type="text" id="survey-title" name="title" value="{{ template.title }}" placeholder="Enter survey title" autocomplete="off" />
+
+        <label for="survey-desc">Survey Description</label>
+        <textarea id="survey-desc" name="description" placeholder="Brief description about the survey" autocomplete="off">{{ template.description }}</textarea>
+
+        <div class="form-actions" data-aos="fade-up">
+          <button type="submit" class="btn" aria-label="Save Survey Info Changes">✅ Save Changes</button>
+        </div>
+      </section>
+
+      <!-- Questions Tab -->
+      <section id="questions" class="tab-pane" role="tabpanel" aria-labelledby="tab-questions">
+        <div id="questionList">
+          {% for q in template.questions %}
+          <div class="question-box animate-on-scroll" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+            <button type="button" class="remove-btn" aria-label="Remove question {{ forloop.counter }}">✕</button>
+            <label>Question {{ forloop.counter }}</label>
+            <input type="text" name="question_texts" value="{{ q.text }}" placeholder="Enter question text" autocomplete="off" />
+
+            <label>Type</label>
+            <select name="question_types" aria-label="Select question type for question {{ forloop.counter }}">
+              <option value="text" {% if q.type == "text" %}selected{% endif %}>Text</option>
+              <option value="multiple_choice" {% if q.type == "multiple_choice" %}selected{% endif %}>Multiple Choice</option>
+              <option value="checkbox" {% if q.type == "checkbox" %}selected{% endif %}>Checkbox</option>
+              <option value="rating" {% if q.type == "rating" %}selected{% endif %}>Rating</option>
+            </select>
+
+            <label><input type="checkbox" name="allow_multiple" {% if q.allow_multiple %}checked{% endif %}> Allow multiple answers</label>
+
+            <label>Options</label>
+            <input type="text" name="question_options" value="{{ q.options|join:', ' }}" placeholder="Option A, Option B" autocomplete="off" />
+
+            <label><input type="checkbox" name="required_flags" {% if q.required %}checked{% endif %}> Required</label>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="form-actions" data-aos="fade-up">
+          <button type="button" class="btn" id="addQuestion" aria-label="Add a new question">+ Add Question</button>
+          <button type="submit" class="btn" aria-label="Save Questions Changes">✅ Save Changes</button>
+        </div>
+      </section>
+    </div>
+  </form>
+</div>
+
+<!-- Other Templates Carousel -->
+<section class="other-templates-section" data-aos="fade-up" aria-label="Other survey templates">
+  <h3 style="text-align:center; font-size:1.8rem; font-weight:700; color:var(--purple-main); margin-bottom:2rem;">
+    📚 Other Templates
+  </h3>
+
+  <div class="carousel-wrapper">
+    <button class="carousel-nav left" onclick="scrollCarousel(-1)" aria-label="Scroll templates left">←</button>
+    <div class="carousel" id="carousel" tabindex="0" aria-roledescription="carousel" aria-live="polite">
+      {% for temp in other_templates %}
+      <article class="carousel-card" role="group" aria-roledescription="slide" aria-label="Template: {{ temp.title }}">
+        <h4>{{ temp.title }}</h4>
+        <p>{{ temp.description|truncatewords:18 }}</p>
+        <a href="{% url 'edit_template_survey' temp.key %}" class="btn" aria-label="Use Template {{ temp.title }}">Use Template</a>
+      </article>
+      {% endfor %}
+    </div>
+    <button class="carousel-nav right" onclick="scrollCarousel(1)" aria-label="Scroll templates right">→</button>
+  </div>
+
+  <div style="text-align:center; margin-top:2.5rem;">
+    <a href="{% url 'survey_templates' %}" class="btn" style="background: var(--button-light-bg); text-decoration: none !important;" aria-label="View all survey templates">View All Templates</a>
+  </div>
+</section>
+
+<script>
+  function scrollCarousel(direction) {
+    const carousel = document.getElementById('carousel');
+    const cardWidth = carousel.querySelector('.carousel-card')?.offsetWidth || 320;
+    carousel.scrollBy({
+      left: direction * (cardWidth + 24),
+      behavior: 'smooth'
+    });
+  }
+
+  function switchTab(id) {
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.querySelector(`.tab-button[onclick*='${id}']`).classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  document.getElementById("addQuestion").addEventListener("click", function () {
+    const index = document.querySelectorAll(".question-box").length;
+    const box = document.createElement("div");
+    box.className = "question-box animate-on-scroll";
+    box.setAttribute("data-aos", "fade-up");
+    box.setAttribute("data-aos-delay", `${(index + 1) * 100}`);
+    box.innerHTML = `
+      <button type="button" class="remove-btn" aria-label="Remove question ${index + 1}">✕</button>
+      <label>Question ${index + 1}</label>
+      <input type="text" name="question_texts" placeholder="Enter question text" autocomplete="off" />
+      <label>Type</label>
+      <select name="question_types" aria-label="Select question type for question ${index + 1}">
+        <option value="text">Text</option>
+        <option value="multiple_choice">Multiple Choice</option>
+        <option value="checkbox">Checkbox</option>
+        <option value="rating">Rating</option>
+      </select>
+      <label><input type="checkbox" name="allow_multiple"> Allow multiple answers</label>
+      <label>Options</label>
+      <input type="text" name="question_options" placeholder="Option A, Option B" autocomplete="off" />
+      <label><input type="checkbox" name="required_flags"> Required</label>
+    `;
+    document.getElementById("questionList").appendChild(box);
+    AOS.refresh();
+  });
+
+  document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("remove-btn")) {
+      e.target.closest(".question-box").remove();
+    }
+  });
+</script>
+
+{% endblock %}

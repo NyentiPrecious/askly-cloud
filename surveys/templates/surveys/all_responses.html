@@ -1,0 +1,247 @@
+{% extends "surveys/base.html" %}
+{% block title %}Responses Center - Askly{% endblock %}
+{% block content %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init({ duration: 700, once: true });</script>
+
+<style>
+:root {
+  --purple-main: #7c3aed;
+  --purple-light: #a78bfa;
+  --card-light: rgba(255, 255, 255, 0.88);
+  --card-dark: rgba(45, 30, 90, 0.85);
+  --text-light: #1e1b4b;
+  --text-dark: #ffffff;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fdfdfd;
+  color: var(--text-light);
+  transition: 0.3s;
+}
+body.dark {
+  background: #1e1b4b;
+  color: var(--text-dark);
+}
+
+.response-wrapper {
+  max-width: 1100px;
+  margin: auto;
+  padding: 4rem 2rem;
+}
+
+.response-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.response-header h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--purple-main), var(--purple-light));
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+.response-header p {
+  font-size: 1rem;
+  color: #666;
+}
+body.dark .response-header p {
+  color: #ccc;
+}
+
+.survey-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+.survey-controls input,
+.survey-controls select {
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  border: 1px solid #ddd6fe;
+  background: #fff;
+  transition: 0.3s;
+}
+body.dark .survey-controls input,
+body.dark .survey-controls select {
+  background: #2d2155;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.survey-block {
+  background: var(--card-light);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 6px 20px rgba(124,58,237,0.1);
+  border: 1px solid #e4ddff;
+  transition: 0.3s;
+}
+body.dark .survey-block {
+  background: var(--card-dark);
+  border-color: rgba(255,255,255,0.1);
+}
+.survey-block:hover {
+  box-shadow: 0 12px 32px rgba(124,58,237,0.15);
+}
+
+.survey-block h3 {
+  font-size: 1.4rem;
+  color: var(--purple-main);
+  margin-bottom: 1rem;
+}
+
+.response-item {
+  background: #f3f0ff;
+  margin-bottom: 0.75rem;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  transition: 0.3s;
+}
+.response-item:hover {
+  background: #ede9fe;
+}
+body.dark .response-item {
+  background: rgba(45, 30, 90, 0.6);
+  color: var(--text-dark);
+}
+.response-item p {
+  margin: 0;
+}
+.response-item small {
+  color: gray;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.export-buttons {
+  margin-top: 1.2rem;
+}
+.export-buttons select {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #ddd6fe;
+  font-size: 0.9rem;
+}
+body.dark .export-buttons select {
+  background: #2d2155;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.empty-msg {
+  text-align: center;
+  font-style: italic;
+  color: gray;
+  margin-top: 3rem;
+}
+</style>
+
+<div class="response-wrapper" data-aos="fade-up">
+  <div class="response-header" data-aos="fade-down">
+    <h2>📥 All Survey Responses</h2>
+    <p>Filter, view, and export responses by survey.</p>
+  </div>
+
+  <div class="survey-controls" data-aos="fade-up">
+    <input type="text" id="searchInput" placeholder="🔍 Search survey title..." oninput="searchSurveys()" />
+    <select onchange="filterByDate(this.value)">
+      <option value="">⏱ Recently Created</option>
+      <option value="today">Today</option>
+      <option value="week">Last 7 Days</option>
+      <option value="month">Last 30 Days</option>
+    </select>
+    <select onchange="filterBySurvey(this.value)">
+      <option value="all">📋 All Surveys</option>
+      {% regroup responses by survey as grouped %}
+      {% for group in grouped %}
+        <option value="survey-{{ group.grouper.id }}">{{ group.grouper.title }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  {% regroup responses by survey as grouped %}
+  {% for group in grouped %}
+    <div class="survey-block" id="survey-{{ group.grouper.id }}">
+      <h3>{{ group.grouper.title }}</h3>
+
+      {% for r in group.list %}
+        <div class="response-item">
+          <p><strong>{{ r.question.text }}:</strong> {{ r.answer }}</p>
+          <small>🕓 {{ r.submitted_at|date:"d M Y, H:i" }}</small>
+        </div>
+      {% endfor %}
+
+      <div class="export-buttons">
+        <select onchange="handleExport(this.value, '{{ group.grouper.id }}')">
+          <option value="">Export Responses</option>
+          <option value="csv">⬇ CSV</option>
+          <option value="excel">🟣 Excel</option>
+          <option value="pdf">📄 PDF</option>
+        </select>
+      </div>
+    </div>
+  {% endfor %}
+
+  {% if responses|length == 0 %}
+    <p class="empty-msg">No responses have been submitted yet.</p>
+  {% endif %}
+</div>
+
+<script>
+function handleExport(type, surveyId) {
+  if (!type) return;
+  const urlMap = {
+    csv: `/responses/download/csv/${surveyId}/`,
+    excel: `/responses/download/excel/${surveyId}/`,
+    pdf: `/responses/download/pdf/${surveyId}/`
+  };
+  window.location.href = urlMap[type];
+}
+
+function filterBySurvey(selectedId) {
+  const blocks = document.querySelectorAll(".survey-block");
+  blocks.forEach(block => {
+    block.style.display = (selectedId === "all" || block.id === selectedId) ? "block" : "none";
+  });
+}
+
+function searchSurveys() {
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  document.querySelectorAll(".survey-block").forEach(block => {
+    const title = block.querySelector("h3").textContent.toLowerCase();
+    block.style.display = title.includes(query) ? "block" : "none";
+  });
+}
+
+function filterByDate(range) {
+  const now = new Date();
+  document.querySelectorAll(".survey-block").forEach(block => {
+    const responses = block.querySelectorAll(".response-item small");
+    let show = false;
+    responses.forEach(el => {
+      const text = el.textContent;
+      const match = text.match(/(\d{2}) (\w{3}) (\d{4}), (\d{2}):(\d{2})/);
+      if (match) {
+        const dt = new Date(`${match[3]} ${match[2]} ${match[1]} ${match[4]}:${match[5]}`);
+        const diff = (now - dt) / (1000 * 60 * 60 * 24);
+        if ((range === "today" && diff < 1) ||
+            (range === "week" && diff <= 7) ||
+            (range === "month" && diff <= 30)) {
+          show = true;
+        }
+      }
+    });
+    block.style.display = show || range === "" ? "block" : "none";
+  });
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,255 @@
+{% extends "surveys/base.html" %}
+{% load static %}
+
+{% block title %}Settings - Askly{% endblock %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+<style>
+  :root {
+    --purple-main: #7c3aed;
+    --purple-light: #a78bfa;
+    --glass-light: rgba(245, 243, 255, 0.6);
+    --glass-dark: rgba(35, 25, 70, 0.85);
+    --text-light: #1e1b4b;
+    --text-dark: #ececff;
+    --error: #ef4444;
+    --danger-hover: #b91c1c;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--glass-light);
+    transition: background 0.3s ease;
+  }
+  .dark body {
+    background: var(--glass-dark);
+  }
+
+  .settings-wrapper {
+    max-width: 900px;
+    margin: 4rem auto 6rem;
+    padding: 3rem 3rem 4rem;
+    background: var(--glass-light);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(124, 58, 237, 0.15);
+    color: var(--text-light);
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .dark .settings-wrapper {
+    background: var(--glass-dark);
+    color: var(--text-dark);
+    box-shadow: 0 15px 50px rgba(124, 58, 237, 0.55);
+  }
+
+  .settings-wrapper h2 {
+    font-weight: 700;
+    font-size: 2.4rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(90deg, var(--purple-main), var(--purple-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+  }
+
+  .settings-form label {
+    display: block;
+    margin: 1.4rem 0 0.6rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+
+  .settings-form input[type="text"],
+  .settings-form input[type="email"],
+  .settings-form input[type="file"],
+  .settings-form input[type="color"],
+  .settings-form select,
+  .settings-form textarea {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    border-radius: 14px;
+    border: 1.8px solid #ddd6fe;
+    background: white;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s ease, background 0.3s ease;
+    box-shadow: 0 4px 8px rgba(124, 58, 237, 0.05);
+  }
+
+  .settings-form textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .settings-form input[type="file"] {
+    padding: 0.4rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .dark .settings-form input,
+  .dark .settings-form select,
+  .dark .settings-form textarea {
+    background: #2e2a57;
+    color: var(--text-dark);
+    border-color: #6659ff88;
+    box-shadow: 0 4px 8px rgba(124, 58, 237, 0.4);
+  }
+
+  .settings-form input[type="file"]::-webkit-file-upload-button {
+    background: var(--purple-main);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .settings-form input[type="file"]::-webkit-file-upload-button:hover {
+    background: #5b21b6;
+  }
+
+  .settings-form button,
+  .cta-button {
+    margin-top: 2.5rem;
+    background: var(--purple-main);
+    color: white;
+    border: none;
+    padding: 1rem 2.8rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+    display: inline-block;
+    text-align: center;
+  }
+
+  .settings-form button:hover,
+  .cta-button:hover {
+    background: #5b21b6;
+    box-shadow: 0 12px 36px rgba(91, 33, 182, 0.6);
+  }
+
+  .section-divider {
+    margin: 3rem 0 2.5rem;
+    border-top: 1.5px solid #e5e5f7;
+  }
+  .dark .section-divider {
+    border-color: #5a4dbf88;
+  }
+
+  /* Delete Account button styling */
+  .danger-button {
+    background: var(--error);
+    padding: 0.85rem 2.4rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    border: none;
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .danger-button:hover {
+    background: var(--danger-hover);
+    box-shadow: 0 10px 28px rgba(185, 28, 28, 0.7);
+  }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .settings-wrapper {
+      margin: 3rem 1rem 4rem;
+      padding: 2.2rem 1.8rem 3rem;
+      border-radius: 20px;
+    }
+
+    .settings-wrapper h2 {
+      font-size: 2rem;
+    }
+
+    .settings-form button,
+    .cta-button,
+    .danger-button {
+      width: 100%;
+      padding: 1rem 0;
+    }
+  }
+
+  
+</style>
+
+<div class="settings-wrapper" data-aos="fade-up" role="main" aria-label="User Settings">
+  <h2>⚙️ Settings</h2>
+
+  <form class="settings-form" action="{% url 'update_settings' %}" method="POST" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    <!-- Account Info -->
+    <label for="name">Your Name</label>
+    <input type="text" name="name" id="name" value="{{ user.get_full_name }}" autocomplete="name" />
+
+    <label for="email">Email Address</label>
+    <input type="email" name="email" id="email" value="{{ user.email }}" autocomplete="email" />
+
+    <label for="profile_image">Profile Image</label>
+    <input type="file" name="profile_image" id="profile_image" accept="image/*" />
+
+    <div class="section-divider"></div>
+
+    <!-- Branding -->
+    <label for="brand_color">Brand Accent Color</label>
+    <input type="color" name="brand_color" id="brand_color" value="{{ branding.color|default:'#7c3aed' }}" />
+
+    <label for="tagline">Tagline or Signature</label>
+    <input type="text" name="tagline" id="tagline" placeholder="e.g. 'Insight. Action. Askly.'" value="{{ branding.tagline|default:'' }}" />
+
+    <div class="section-divider"></div>
+
+    <!-- Preferences -->
+    <label for="default_status">Default Survey Status</label>
+    <select name="default_status" id="default_status">
+      <option value="active" {% if user.default_status == 'active' %}selected{% endif %}>Active</option>
+      <option value="draft" {% if user.default_status == 'draft' %}selected{% endif %}>Draft</option>
+      <option value="archived" {% if user.default_status == 'archived' %}selected{% endif %}>Archived</option>
+    </select>
+
+    <label for="email_alerts">Receive Email Alerts for New Responses</label>
+    <select name="email_alerts" id="email_alerts">
+      <option value="yes" {% if user.email_alerts == 'yes' %}selected{% endif %}>Yes</option>
+      <option value="no" {% if user.email_alerts == 'no' %}selected{% endif %}>No</option>
+    </select>
+
+    <div class="section-divider"></div>
+
+    <!-- Privacy -->
+    <label>Download My Data</label>
+    <a href="{% url 'download_responses_csv' %}" class="cta-button" role="button" tabindex="0">Download CSV</a>
+
+    <div class="section-divider"></div>
+
+    <!-- Delete Account -->
+    <label>Delete My Account</label>
+    <div style="margin-top: 1rem;">
+      <form action="{% url 'delete_account' %}" method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This action is irreversible.')">
+        {% csrf_token %}
+        <button type="submit" class="danger-button" aria-label="Delete account">Delete Account</button>
+      </form>
+    </div>
+
+    <button type="submit">💾 Save Settings</button>
+  </form>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 800, once: true });
+</script>
+
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "surveys/base.html" %}
+{% block title %}Notifications - Askly{% endblock %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+<style>
+  :root {
+    --purple-main: #7c3aed;
+    --purple-light: #a78bfa;
+    --glass-light: rgba(245, 243, 255, 0.55);
+    --glass-dark: rgba(35, 25, 70, 0.8);
+    --text-light: #1e1b4b;
+    --text-dark: #ececff;
+  }
+
+  /* Full page container */
+  .notifications-wrapper {
+    min-height: 100vh;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    background: var(--glass-light);
+    backdrop-filter: blur(14px);
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(124, 58, 237, 0.15);
+    color: var(--text-light);
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dark .notifications-wrapper {
+    background: var(--glass-dark);
+    color: var(--text-dark);
+    box-shadow: 0 15px 50px rgba(124, 58, 237, 0.55);
+  }
+
+  h2 {
+    color: var(--purple-main);
+    font-weight: 700;
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+  }
+
+  ul.notifications-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+
+  ul.notifications-list li {
+    background: #faf5ff;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 14px;
+    box-shadow: 0 3px 8px rgba(124, 58, 237, 0.1);
+    transition: box-shadow 0.3s ease;
+    font-size: 1rem;
+    word-break: break-word;
+  }
+
+  ul.notifications-list li:hover {
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.25);
+  }
+
+  .dark ul.notifications-list li {
+    background: rgba(45, 30, 90, 0.85);
+    box-shadow: 0 3px 8px rgba(124, 58, 237, 0.3);
+  }
+
+  small.timestamp {
+    display: block;
+    margin-top: 0.5rem;
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  .empty-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #9ca3af;
+    padding: 3rem 0;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .notifications-wrapper {
+      padding: 2rem 1rem;
+      border-radius: 16px;
+      max-width: 100%;
+      min-height: 100vh;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+    }
+
+    ul.notifications-list li {
+      font-size: 0.95rem;
+      padding: 1rem 1.2rem;
+    }
+  }
+</style>
+
+<div class="notifications-wrapper" role="region" aria-label="User Notifications">
+  <h2><i class="fas fa-bell"></i> Your Notifications</h2>
+  <ul class="notifications-list" tabindex="0">
+    {% for note in notifications %}
+      <li>
+        {{ note.message|linebreaksbr }}
+        <small class="timestamp">{{ note.created_at|date:"M d, Y – H:i" }}</small>
+      </li>
+    {% empty %}
+      <li class="empty-message">No notifications yet!</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

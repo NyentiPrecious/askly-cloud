@@ -1,0 +1,93 @@
+{% extends "surveys/base.html" %}
+{% load static %}
+
+{% block title %}Take Survey - {{ survey.title }}{% endblock %}
+
+{% block content %}
+<style>
+  .survey-wrapper {
+    max-width: 700px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.15);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .survey-title {
+    color: #7c3aed;
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+
+  .survey-description {
+    color: #5b21b6;
+    margin-bottom: 30px;
+    font-style: italic;
+  }
+
+  .question {
+    margin-bottom: 25px;
+  }
+
+  .question label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #3a0ca3;
+  }
+
+  .question input[type="text"],
+  .question textarea {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid #ddd6fe;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s ease;
+  }
+
+  .question input[type="text"]:focus,
+  .question textarea:focus {
+    border-color: #7c3aed;
+    outline: none;
+  }
+
+  button.submit-btn {
+    background-color: #7c3aed;
+    color: white;
+    padding: 12px 35px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.3s ease;
+  }
+
+  button.submit-btn:hover {
+    background-color: #5b21b6;
+  }
+</style>
+
+<div class="survey-wrapper">
+  <h1 class="survey-title">{{ survey.title }}</h1>
+  {% if survey.description %}
+    <p class="survey-description">{{ survey.description }}</p>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+    {% for question in survey.questions.all %}
+      <div class="question">
+        <label for="answer_{{ forloop.counter }}">{{ question.text }}</label>
+        <input type="text" name="answers" id="answer_{{ forloop.counter }}" required>
+      </div>
+    {% endfor %}
+    <button type="submit" class="submit-btn">Submit</button>
+  </form>
+</div>
+
+{% endblock %}

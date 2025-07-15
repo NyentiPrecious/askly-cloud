@@ -1,0 +1,199 @@
+ :root {
+      --primary: #7c3aed;
+      --secondary: #c084fc;
+      --bg-light: #ffffff;
+      --bg-dark: #0a0a0a;
+      --text-light: #f0f0f0;
+      --text-dark: #121212;
+      --card-bg-dark: #1f1f1f;
+      --input-bg-dark: #2c2c2c;
+      --input-border-dark: #555;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-light);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 30px;
+      background: var(--primary);
+      color: white;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo i {
+      font-size: 1.8rem;
+    }
+
+    .logo span {
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .toggle-theme {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 10px 14px;
+      border-radius: 20px;
+      color: white;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.3s ease;
+    }
+
+    .toggle-theme:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 80px 20px 50px;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(192, 132, 252, 0.9)), url('./assets/images/lts.jpg') no-repeat center/cover;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+    }
+
+    .nav-section {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      padding: 60px 20px;
+    }
+
+    .nav-card {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 280px;
+      text-align: center;
+      border: 2px solid #eee;
+      transition: all 0.3s ease;
+      color: var(--text-dark);
+    }
+
+    .dark .nav-card {
+      background: var(--card-bg-dark);
+      border-color: #444;
+      color: var(--text-light);
+    }
+
+    .nav-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--secondary);
+    }
+
+    .nav-card a {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: bold;
+    }
+
+    .nav-card a:hover {
+      background: #5b21b6;
+    }
+
+    .feedback {
+      padding: 60px 20px;
+      background: #f9f9f9;
+      text-align: center;
+    }
+
+    .dark .feedback {
+      background: #1a1a1a;
+    }
+
+    .feedback h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .feedback p {
+      max-width: 600px;
+      margin: 0 auto 30px;
+      color: inherit;
+    }
+
+    .feedback form {
+      max-width: 600px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .feedback input,
+    .feedback textarea {
+      padding: 12px 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1rem;
+      background: white;
+      color: var(--text-dark);
+    }
+
+    .dark .feedback input,
+    .dark .feedback textarea {
+      background: var(--input-bg-dark);
+      color: var(--text-light);
+      border: 1px solid var(--input-border-dark);
+    }
+
+    .feedback button {
+      padding: 12px 20px;
+      background: var(--primary);
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .feedback button:hover {
+      background: #5b21b6;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.9rem;
+      color: #999;
+      background: #f1f1f1;
+    }
+
+    .dark footer {
+      background: #111;
+      color: #aaa;
+    }

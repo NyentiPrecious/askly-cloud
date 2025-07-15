@@ -1,0 +1,97 @@
+{% extends "surveys/base.html" %}
+{% load static %}
+{% block title %}Take Survey - {{ survey.title }}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+
+<style>
+  .take-survey-container {
+    max-width: 800px;
+    margin: 60px auto;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.8s ease;
+  }
+
+  .dark .take-survey-container {
+    background: #1e1e2f;
+    color: #eee;
+  }
+
+  .take-survey-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #7c3aed;
+  }
+
+  .take-survey-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .survey-question {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .survey-answer {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    width: 100%;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+    transition: border 0.3s;
+  }
+
+  .survey-answer:focus {
+    border-color: #7c3aed;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+  }
+
+  .submit-button {
+    background: #7c3aed;
+    color: white;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .submit-button:hover {
+    background: #5b21b6;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="take-survey-container" data-aos="zoom-in">
+  <h2>{{ survey.title }}</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {% for question in survey.questions.all %}
+      <div>
+        <label class="survey-question">{{ question.text }}</label>
+        <input type="text" name="answers" class="survey-answer" placeholder="Your answer..." required />
+      </div>
+    {% endfor %}
+    <button type="submit" class="submit-button">Submit Survey</button>
+  </form>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init({ duration: 1000, once: true });</script>
+{% endblock %}

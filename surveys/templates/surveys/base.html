@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Askly{% endblock %}</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Scripts -->
+  <script src="{% static 'js/main.js' %}" defer></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+</head>
+
+
+<style>
+  nav {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 1rem; /* Match homepage */
+    color: #1e1b4b;
+    padding: 20px 40px;
+    transition: all 0.3s ease;
+  }
+
+  .dark nav {
+    color: #f5f3ff;
+  }
+
+  nav a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  nav a:hover {
+    color: #7c3aed;
+  }
+
+  @media (max-width: 640px) {
+    nav {
+      font-size: 0.95rem;
+      padding: 16px 20px;
+    }
+  }
+</style>
+
+
+<style>
+  /* 🔔 Notification Icon Badge */
+/* 🔔 Bell Icon Styling */
+.bell-icon {
+  font-size: 1.3rem;
+  color: #6b21a8; /* Adjust to match Askly’s accent */
+  transition: color 0.3s ease;
+}
+
+.dark .bell-icon {
+  color: #a78bfa;
+}
+
+.nav-item:notif-item {
+  position: relative;
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+/* 🔴 Notification Count Badge */
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #dc2626;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 5px;
+  border-radius: 50%;
+  font-weight: 600;
+}
+
+/* 🧼 Reset default link style inside nav */
+.nav-item a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.notif-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #dc2626;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-weight: 600;
+}
+
+/* 🔔 Dropdown Container */
+.notif-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background-color: #ffffff;
+  color: #1f2937;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  width: 250px;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.dark .notif-dropdown {
+  background-color: #1e1e2f;
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(124,58,237,0.2);
+}
+
+.notifications-dropdown:hover .notif-dropdown {
+  display: block;
+}
+
+/* 🔔 Notification List Styling */
+.notif-header {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #7c3aed;
+}
+
+.dark .notif-header {
+  color: #a78bfa;
+}
+
+.notif-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.dark .notif-item {
+  border-bottom: 1px solid #2e2e3f;
+}
+
+.notif-item.empty {
+  text-align: center;
+  color: #9ca3af;
+}
+
+.view-all-link {
+  display: block;
+  text-align: center;
+  font-weight: 500;
+  color: #7c3aed;
+  text-decoration: none;
+  margin-top: 0.5rem;
+}
+
+.dark .view-all-link {
+  color: #a78bfa;
+}
+
+.view-all-link:hover {
+  text-decoration: underline;
+}
+
+/* 🌍 Mobile Responsiveness */
+@media (max-width: 500px) {
+  .notif-dropdown {
+    right: auto;
+    left: 0;
+    width: 100vw;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+</style>
+<body class="light">
+
+<!-- 🔹 Navbar -->
+<header id="navbar" class="navbar">
+  <div class="nav-container">
+    <div class="logo">
+      <i class="fas fa-paper-plane"></i>
+      <span>Askly</span>
+    </div>
+
+    <button class="menu-toggle" onclick="toggleMenu()">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <nav class="nav-links">
+      <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'survey_templates' %}">Templates</a></li>
+        <li><a href="{% url 'survey_list' %}">Surveys</a></li>
+        
+
+
+        <li class="dropdown">
+          <a href="#">Account ▾</a>
+          <ul class="dropdown-menu">
+            {% if user.is_authenticated %}
+              <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+              <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% else %}
+              <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+              <li><a href="{% url 'login' %}">Login</a></li>
+              <li><a href="{% url 'signup' %}">Sign Up</a></li>
+            {% endif %}
+          </ul>
+        </li>
+
+        <li>
+          <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle">
+            <i id="theme-icon" class="fas fa-moon"></i>
+          </button>
+
+        </li>
+              <li class="dropdown notifications-dropdown">
+  <a href="{% url 'notifications_page' %}" class="bell-icon" aria-label="Notifications">
+    <i class="fas fa-bell"></i>
+    {% if unread_count > 0 %}
+      <span class="notif-count">{{ unread_count }}</span>
+    {% endif %}
+  </a>
+  <div class="notif-dropdown">
+    <h4 class="notif-header">Notifications</h4>
+    <ul class="notif-list">
+      {% for note in notifications %}
+        <li class="notif-item">
+          <i class="fas fa-circle" style="color:#7c3aed; font-size:0.6rem;"></i>
+          {{ note.message|truncatechars:60 }}
+        </li>
+      {% empty %}
+        <li class="notif-item empty">No notifications yet.</li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'notifications_page' %}" class="view-all-link">View All</a>
+  </div>
+</li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- 🔹 Main Content -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- 🔹 Footer -->
+<footer class="footer">
+  <p>&copy; 2025 Askly. All rights reserved.</p>
+</footer>
+
+<script>
+function toggleNotifications(event) {
+  event.preventDefault(); // only prevent default if necessary
+  const menu = document.getElementById("notif-menu");
+  menu.classList.toggle("show");
+}
+</script>
+
+</body>
+</html>

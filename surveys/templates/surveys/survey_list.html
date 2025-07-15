@@ -1,0 +1,121 @@
+{% extends "surveys/base.html" %}
+{% load static %}
+{% block title %}Surveys - Askly{% endblock %}
+{% block content %}
+{% load custom_filters %}
+
+<!-- AOS -->
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init({ duration: 800, once: true });</script>
+
+<style>
+  :root {
+    --purple-main: #7c3aed;
+    --purple-light: #a78bfa;
+    --button-dark-bg: #5b21b6;
+    --button-light-bg: #8b5cf6;
+    --card-bg-light: rgba(255,255,255,0.9);
+    --card-bg-dark: rgba(45,30,90,0.9);
+    --text-light: #1e1b4b;
+    --text-dark: #f4f4ff;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#f7f3ff 0%,#ece7ff 100%);
+    color: var(--text-light);
+    transition: background .4s ease,color .4s ease;
+  }
+  body.dark {
+    background:#0f0f1a;
+    color: var(--text-dark);
+  }
+
+  /* container */
+  .survey-container{max-width:1100px;margin:auto;padding:4rem 1.5rem;}
+  .survey-container h1{font-size:2.6rem;font-weight:700;text-align:center;margin-bottom:2.5rem;background:linear-gradient(90deg,var(--purple-main),var(--purple-light));-webkit-background-clip:text;color:transparent;}
+
+  /* controls */
+  .survey-controls{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:2.2rem;}
+  .survey-controls input,.survey-controls select{padding:.75rem 1.1rem;border-radius:14px;border:1px solid #ded6ff;font-size:1rem;box-shadow:0 4px 12px rgba(0,0,0,.04);background:#fff;color:var(--text-light);transition:.3s;}
+  body.dark .survey-controls input,body.dark .survey-controls select{background:#1e1e2f;border-color:#4b5563;color:var(--text-dark);}
+  .survey-controls input:focus,.survey-controls select:focus{outline:none;border-color:var(--purple-main);box-shadow:0 0 0 3px rgba(124,58,237,.25);}  
+
+  /* card */
+  .survey-card{background:var(--card-bg-light);backdrop-filter:blur(6px);border-radius:18px;padding:2rem;margin-bottom:1.6rem;box-shadow:0 10px 25px rgba(124,58,237,.12);transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden;}
+  body.dark .survey-card{background:var(--card-bg-dark);}
+  .survey-card::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(124,58,237,.15),rgba(255,255,255,.05) 70%);opacity:0;transition:opacity .4s;pointer-events:none;}
+  .survey-card:hover{transform:translateY(-6px);box-shadow:0 15px 35px rgba(124,58,237,.18);}
+  .survey-card:hover::after{opacity:1;}
+
+  .survey-card h3{font-size:1.4rem;font-weight:600;margin-bottom:.6rem;color:var(--purple-main);}body.dark .survey-card h3{color:var(--purple-light);}  
+  .survey-card p{margin-bottom:1rem;line-height:1.55;}
+  .survey-card .meta{font-size:.93rem;margin-bottom:1rem;}
+
+  /* buttons */
+  .btn{display:inline-block;padding:.6rem 1.25rem;border-radius:10px;font-weight:500;font-size:.95rem;font-family:'Poppins',sans-serif;text-decoration:none;border:none;cursor:pointer;transition:.25s;white-space:nowrap;margin:.25rem .4rem .25rem 0;}
+  .btn-primary{background:var(--button-light-bg);color:#fff;}
+  .btn-secondary{background:#a855f7;color:#fff;}
+  .btn-neutral{background:#6b7280;color:#fff;}
+  .btn:hover{filter:brightness(1.05);}  
+
+  /* floating FAB */
+  .cta-btn-fab{position:fixed;bottom:30px;right:30px;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--purple-main);color:#fff;box-shadow:0 10px 30px rgba(124,58,237,.4);animation:ripple 2s infinite;z-index:9999;}
+  @keyframes ripple{0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,.4);}50%{box-shadow:0 0 0 20px rgba(124,58,237,0);}}
+</style>
+
+<main class="survey-container">
+  <h1 data-aos="fade-down">📋 Available Surveys</h1>
+
+  <!-- controls -->
+  <section class="survey-controls" data-aos="fade-up">
+    <input type="text" id="surveySearch" placeholder="Search surveys…" onkeyup="filterSurveys()" />
+    <select id="surveyFilter" onchange="filterSurveys()">
+      <option value="all">All</option>
+      <option value="active">Active</option>
+      <option value="draft">Draft</option>
+      <option value="archived">Archived</option>
+    </select>
+  </section>
+
+  <!-- cards -->
+  <div id="surveyContainer">
+    {% for survey in surveys %}
+      <div class="survey-card" data-status="{{ survey.status }}" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+        <h3 contenteditable="true" onblur="updateTitle('{{ survey.id }}', this.innerText)">{{ survey.title }}</h3>
+        {% if survey.description %}<p>{{ survey.description }}</p>{% endif %}
+        <div class="meta"><strong>Status:</strong> {{ survey.status|title }}</div>
+
+        <a href="{% url 'take_survey' survey.slug %}" class="btn btn-primary">Take Survey</a>
+        <a href="{% url 'survey_review' survey.id %}" class="btn btn-secondary">Preview</a>
+        <button class="btn btn-neutral" onclick="copyToClipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'take_survey' survey.slug %}')">Copy Link</button>
+
+        {% if survey.status == 'active' %}
+          <button class="btn btn-neutral" onclick="updateStatus('{{ survey.id }}','archived')">Archive</button>
+          <button class="btn btn-neutral" onclick="updateStatus('{{ survey.id }}','draft')">Save as Draft</button>
+        {% elif survey.status == 'archived' %}
+          <button class="btn btn-neutral" onclick="updateStatus('{{ survey.id }}','active')">Activate</button>
+        {% elif survey.status == 'draft' %}
+          <button class="btn btn-neutral" onclick="updateStatus('{{ survey.id }}','active')">Activate</button>
+          <button class="btn btn-neutral" onclick="updateStatus('{{ survey.id }}','archived')">Archive</button>
+        {% endif %}
+      </div>
+    {% empty %}
+      <p>No surveys available yet.</p>
+    {% endfor %}
+  </div>
+</main>
+
+<a href="{% url 'create_survey' %}" class="cta-btn-fab"><i class="fas fa-plus"></i></a>
+
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+
+<script>
+function getCSRF(){return document.querySelector('[name="csrfmiddlewaretoken"]').value || '';}
+function updateStatus(id,status){fetch(`/surveys/update-survey-status/${id}/`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCSRF()},body:JSON.stringify({status})}).then(r=>r.json()).then(d=>{d.success?location.reload():alert(d.error||'Failed');});}
+function copyToClipboard(t){navigator.clipboard.writeText(t).then(()=>alert('Link copied!')).catch(()=>alert('Copy failed'));}
+function filterSurveys(){const q=document.getElementById('surveySearch').value.toLowerCase();const f=document.getElementById('surveyFilter').value;document.querySelectorAll('.survey-card').forEach(c=>{const match=c.querySelector('h3').innerText.toLowerCase().includes(q);const statusMatch=f==='all'||c.dataset.status===f;c.style.display=match&&statusMatch?'block':'none';});}
+function updateTitle(id,title){fetch(`/surveys/update-survey-title/${id}/`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCSRF()},body:JSON.stringify({title})});}
+</script>
+{% endblock %}

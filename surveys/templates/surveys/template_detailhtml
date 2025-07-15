@@ -1,0 +1,10 @@
+<!-- surveys/templates/surveys/template_detail.html -->
+{% extends "surveys/base.html" %}
+{% block content %}
+  <div class="template-detail-wrapper">
+    <h1>{{ template.name }}</h1>
+    <p>{{ template.description }}</p>
+    <!-- You can add more preview details here -->
+    <a href="{% url 'create_survey' %}?template={{ template.slug }}" class="btn">Use this Template</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends "surveys/base.html" %}
+{% block title %}Create Survey - Askly{% endblock %}
+{% block content %}
+
+<!-- Assets for animations and icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init({ duration: 800, once: true });</script>
+
+<style>
+  :root {
+    --purple-main: #7c3aed;
+    --purple-light: #a78bfa;
+    --glass-light: rgba(245,243,255,0.55);
+    --glass-dark: rgba(35,25,70,0.8);
+    --card-light: #ffffff;
+    --card-dark: rgba(45,30,90,0.85);
+    --text-light: #1e1b4b;
+    --text-dark: #ececff;
+    --error: #ef4444;
+  }
+
+  body {
+    font-family: "Poppins", sans-serif;
+  }
+
+  .timeline-wrapper {
+    max-width: 880px;
+    margin: 80px auto;
+    padding: 3rem 2.5rem;
+    background: var(--glass-light);
+    backdrop-filter: blur(14px);
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(124,58,237,0.15);
+    color: var(--text-light);
+  }
+
+  .dark .timeline-wrapper {
+    background: var(--glass-dark);
+    color: var(--text-dark);
+    box-shadow: 0 15px 50px rgba(124,58,237,0.55);
+  }
+
+  h2 {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 2.2rem;
+    background: linear-gradient(90deg, var(--purple-main), var(--purple-light));
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 0.9rem 1.1rem;
+    font-size: 1rem;
+    border-radius: 14px;
+    margin-top: 0.6rem;
+    border: 1.5px solid #ddd6fe;
+    transition: border-color 0.25s, background 0.25s;
+    background: #fff;
+    color: var(--text-light);
+  }
+
+  textarea { resize: vertical; min-height: 90px; }
+
+  .dark input, .dark select, .dark textarea {
+    background: #2e2b50;
+    color: var(--text-dark);
+    border-color: #6659ff55;
+  }
+
+  label {
+    font-weight: 600;
+    margin-top: 1rem;
+    display: block;
+  }
+
+  .question-step {
+    position: relative;
+    padding: 1.7rem 2rem;
+    border-radius: 22px;
+    background: var(--card-light);
+    box-shadow: 0 6px 22px rgba(124,58,237,0.08);
+    transition: box-shadow 0.3s, transform 0.3s;
+    margin-bottom: 2rem;
+  }
+
+  .question-step:hover {
+    box-shadow: 0 12px 30px rgba(124,58,237,0.2);
+  }
+
+  .dark .question-step {
+    background: var(--card-dark);
+    box-shadow: 0 6px 22px rgba(124,58,237,0.35);
+  }
+
+  .q-label {
+    position: absolute;
+    left: -46px;
+    top: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--purple-main);
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(124,58,237,0.4);
+  }
+
+  .btn {
+    background: var(--purple-main);
+    color: white;
+    padding: 1rem 2.6rem;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: 0.3s;
+    box-shadow: 0 6px 20px rgba(124,58,237,0.25);
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .btn:hover {
+    background: #5b21b6;
+    transform: translateY(-3px);
+  }
+
+  .remove-btn {
+    margin-top: 1rem;
+    background: var(--error);
+    padding: 0.45rem 0.95rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: white;
+    transition: 0.3s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .remove-btn:hover {
+    background: #b91c1c;
+  }
+</style>
+
+<div class="timeline-wrapper" data-aos="fade-up">
+  <h2>📝 Create a New Survey</h2>
+
+  <form method="POST" id="surveyWizard">
+    {% csrf_token %}
+
+    <!-- Step 1: Title -->
+    <div class="question-step" data-aos="fade-up">
+      <div class="q-label">1</div>
+      <label for="title">Survey Title</label>
+      <input type="text" id="title" name="title" placeholder="e.g. Product Feedback" required>
+
+      <label for="description">Description (optional)</label>
+      <textarea name="description" id="description" placeholder="Short description for your survey..."></textarea>
+    </div>
+
+    <!-- Step 2: Questions -->
+    <div id="questionContainer" class="question-timeline" aria-live="polite">
+      <!-- JS will inject question cards here -->
+    </div>
+
+    <button type="button" class="btn" onclick="addQuestion()">+ Add Question</button>
+
+    <!-- Step 3: Submit -->
+    <div style="margin-top: 2.5rem; text-align: center;">
+      <button type="submit" class="btn">🚀 Preview Survey</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function addQuestion() {
+    const container = document.getElementById("questionContainer");
+    const i = container.children.length + 1;
+
+    const html = `
+      <div class="question-step" data-aos="fade-up">
+        <div class="q-label">Q${i}</div>
+
+        <label for="qtext${i}">Question</label>
+        <input type="text" id="qtext${i}" name="question_texts" placeholder="Your question..." required>
+
+        <label for="qtype${i}">Type</label>
+        <select id="qtype${i}" name="question_types">
+          <option value="text">Text</option>
+          <option value="multiple_choice">Multiple Choice</option>
+          <option value="checkbox">Checkbox</option>
+          <option value="rating">Rating</option>
+        </select>
+
+        <label><input type="checkbox" name="required_flags"> Required</label>
+        <label><input type="checkbox" name="allow_multiple"> Allow Multiple</label>
+
+        <label>Options (for MCQ/Checkbox, comma-separated)</label>
+        <input name="question_options" type="text" placeholder="e.g. Option 1, Option 2">
+
+        <button type="button" class="remove-btn" onclick="removeQuestion(this)">✖ Remove</button>
+      </div>`;
+    container.insertAdjacentHTML("beforeend", html);
+    AOS.refresh();
+  }
+
+  function removeQuestion(btn) {
+    btn.closest(".question-step").remove();
+  }
+
+  document.getElementById("surveyWizard").addEventListener("submit", function (e) {
+    const title = document.getElementById("title").value.trim();
+    const questions = document.querySelectorAll("input[name='question_texts']");
+    const valid = Array.from(questions).filter(q => q.value.trim() !== "");
+    if (!title || valid.length === 0) {
+      e.preventDefault();
+      alert("Please enter a survey title and at least one question.");
+    }
+  });
+</script>
+
+{% endblock %}

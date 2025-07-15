@@ -1,0 +1,101 @@
+{% extends "surveys/base.html" %}
+{% load static %}
+{% block title %}Thank You - Askly{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --purple-main: #7c3aed;
+    --purple-light: #a78bfa;
+    --bg-dark: #1e1e2f;
+    --text-light: #1e1b4b;
+    --text-dark: #f9f9f9;
+  }
+
+  .thankyou-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to right, #f5f3ff, #ede9fe);
+    color: var(--text-light);
+    text-align: center;
+    padding: 3rem 1.5rem;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+  }
+
+  .dark .thankyou-wrapper {
+    background: linear-gradient(to right, #1e1e2f, #2a235d);
+    color: var(--text-dark);
+  }
+
+  .thankyou-wrapper h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--purple-main);
+    margin-bottom: 1rem;
+    animation: popIn 0.7s ease;
+  }
+
+  .dark .thankyou-wrapper h1 {
+    color: var(--purple-light);
+  }
+
+  .thankyou-wrapper p {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .thank-btn {
+    padding: 14px 26px;
+    border-radius: 30px;
+    background-color: var(--purple-main);
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
+  }
+
+  .thank-btn:hover {
+    background-color: #5b21b6;
+    transform: translateY(-2px);
+  }
+
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+</style>
+
+<div class="thankyou-wrapper" data-aos="zoom-in">
+  <h1>🎉 Survey Created Successfully!</h1>
+  <p>You've created <strong>{{ survey.title }}</strong>.<br> Ready to share it?</p>
+
+  <div class="btn-group">
+    <button class="thank-btn" onclick="copyLink()">📎 Copy Survey Link</button>
+    <a href="{% url 'home' %}" class="thank-btn">🏠 Return Home</a>
+  </div>
+</div>
+
+<script>
+  function copyLink() {
+    const slug = "{{ survey.slug }}";
+    const base = window.location.origin;
+    const fullLink = `${base}/survey/${slug}/`;
+    navigator.clipboard.writeText(fullLink);
+    alert("✅ Link copied to clipboard!");
+  }
+</script>
+{% endblock %}

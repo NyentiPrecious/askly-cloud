@@ -1,0 +1,396 @@
+{% extends "surveys/base.html" %}
+{% load static %}  
+
+{% block title %}Home - Askly{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+
+<style>
+  :root {
+    --purple-main: #7c3aed;
+    --purple-light: #a78bfa;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --button-dark-bg: #5b21b6;
+    --button-light-bg: #8b5cf6;
+    --card-bg-light: rgba(255, 255, 255, 0.4);
+    --card-bg-dark: rgba(45, 30, 90, 0.5);
+    --text-dark: #ffffff;
+    --text-light: #1e1b4b;
+    --blur: blur(12px);
+  }
+
+  .feedback-success {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-top: 20px;
+  font-weight: 500;
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.1);
+}
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fdfdfd;
+    transition: background-color 0.5s, color 0.5s;
+  }
+
+  .dark body {
+    background-color: #0f0c24;
+    color: var(--text-dark);
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease-out;
+  }
+
+  .animate-on-scroll.from-left { transform: translateX(-50px); }
+  .animate-on-scroll.from-right { transform: translateX(50px); }
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+
+  .hero-modern {
+    position: relative;
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+    overflow: hidden;
+  }
+
+  .dark .hero-modern {
+    background: linear-gradient(135deg, #1a132d, #2a235d);
+  }
+
+  .hero-bg-blob {
+    position: absolute;
+    top: -80px;
+    left: -80px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #c084fc 0%, transparent 70%);
+    opacity: 0.35;
+    filter: blur(120px);
+    z-index: 0;
+  }
+
+  .hero-container {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: auto;
+    position: relative;
+    z-index: 2;
+    align-items: center;
+  }
+
+  .hero-text {
+    flex: 1;
+    padding: 20px;
+  }
+
+  .hero-text h1 {
+    font-size: 3rem;
+    color: var(--text-light);
+  }
+
+  .dark .hero-text h1 {
+    color: var(--text-dark);
+  }
+
+  .hero-text span {
+    background: linear-gradient(90deg, var(--purple-main), var(--purple-light));
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .hero-text p {
+    font-size: 1.2rem;
+    margin-top: 15px;
+  }
+
+  .cta-button {
+    margin-top: 25px;
+    background: var(--button-light-bg);
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .dark .cta-button { background: var(--button-dark-bg); }
+
+  .cta-button:hover {
+    background: var(--purple-main);
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+  }
+
+  .hero-img {
+    flex: 1;
+    text-align: center;
+  }
+
+  .hero-img img {
+    max-width: 100%;
+    border-radius: 20px;
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.15));
+  }
+
+  .nav-section {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 60px auto;
+    flex-wrap: wrap;
+  }
+
+  .nav-card {
+    backdrop-filter: var(--blur);
+    background: var(--card-bg-light);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.15);
+    padding: 30px;
+    text-align: center;
+    width: 300px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: var(--text-light);
+  }
+
+  .dark .nav-card {
+    background: var(--card-bg-dark);
+    color: var(--text-dark);
+  }
+
+  .nav-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(124, 58, 237, 0.3);
+  }
+
+  .nav-card h3,
+  .nav-card p {
+    margin-top: 10px;
+  }
+
+  .nav-card a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: var(--button-light-bg);
+    color: white;
+    border-radius: 25px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .dark .nav-card a {
+    background-color: var(--button-dark-bg);
+  }
+
+  .nav-card a:hover {
+    background-color: var(--purple-main);
+  }
+
+  .feedback-section {
+    max-width: 1100px;
+    margin: 80px auto;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    background: rgba(245, 243, 255, 0.6);
+    border-radius: 16px;
+    padding: 50px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.1);
+  }
+
+  .dark .feedback-section {
+    background: rgba(35, 25, 70, 0.6);
+  }
+
+  .feedback-text {
+    flex: 1;
+  }
+
+  .feedback-text h2 {
+    color: #5b21b6;
+    font-size: 2rem;
+  }
+
+  .feedback-form {
+    flex: 1;
+  }
+
+  .feedback-form input,
+  .feedback-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd6fe;
+    font-family: 'Poppins', sans-serif;
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  .feedback-form button {
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .feedback-form button:hover {
+    background: #7c3aed;
+  }
+
+  .cta-btn-fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--purple-main);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+    animation: ripple 2s infinite;
+    z-index: 9999;
+  }
+
+  @keyframes ripple {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); }
+    50% { box-shadow: 0 0 0 20px rgba(124, 58, 237, 0); }
+  }
+</style>
+<section class="hero-modern" data-aos="fade-up">
+  <div class="hero-bg-blob"></div>
+  <div class="hero-container">
+    <div class="hero-text animate-on-scroll from-left">
+  <h1><span>Askly</span> helps you get answers fast.</h1>
+  <p>Beautifully designed surveys for impactful decisions.</p>
+  <a href="{% url 'create_survey' %}" class="cta-button">Create a Survey</a>
+</div>
+
+<div class="hero-img animate-on-scroll from-right">
+  <img src="{% static 'images/lts.jpg' %}" alt="Hero Visual">
+</div>
+
+    <!-- <div class="hero-text" style="animation: slideInLeft 1s ease-out;">
+  <h1><span>Askly</span> helps you get answers fast.</h1>
+  <p>Beautifully designed surveys for impactful decisions.</p>
+  <a href="{% url 'create_survey' %}" class="cta-button">Create a Survey</a>
+</div> -->
+
+<!-- <div class="hero-img" style="animation: slideInRight 1s ease-out;">
+  <img src="{% static 'images/lts.jpg' %}" alt="Hero Visual">
+</div> -->
+
+        <!-- <div class="hero-img" data-aos="zoom-in">
+        <img src="{% static 'images/lts.jpg' %}" alt="Hero Visual">
+        </div> -->
+  </div>
+</section>
+
+{% if messages %}
+  <div class="feedback-success">
+    {% for message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="nav-section">
+  <div class="nav-card" data-aos="fade-up" data-aos-delay="100">
+    <i class="fa fa-file-alt fa-2x" style="color:#7c3aed;"></i>
+    <h3>Choose a Template</h3>
+    <p>Start quickly with professionally designed survey templates.</p>
+    <a href="{% url 'survey_templates' %}">Browse Templates</a>
+    
+  </div>
+  <div class="nav-card" data-aos="fade-up" data-aos-delay="200">
+    <i class="fa fa-chart-bar fa-2x" style="color:#7c3aed;"></i>
+    <h3>Dashboard</h3>
+    <p>Visualize data, track responses, and optimize survey results.</p>
+    <a href="{% url 'dashboard' %}">View Analytics</a>
+  </div>
+  <div class="nav-card" data-aos="fade-up" data-aos-delay="300">
+  <i class="fa fa-users fa-2x" style="color:#7c3aed;"></i>
+  <h3>All Surveys</h3>
+  <p>Create, share, and explore live surveys from across the platform.</p>
+  <a href="{% url 'survey_list' %}" class="cta-button">Browse Surveys</a>
+</div>
+</div>
+
+
+<div class="feedback-section" data-aos="fade-up" data-aos-delay="400">
+  <div class="feedback-text">
+    <h2>We Value Your Feedback</h2>
+    <p>Tell us what you love—or what we can do better.</p>
+  </div>
+  <div class="feedback-form">
+    <form action="{% url 'submit_feedback' %}" method="POST">
+      {% csrf_token %}
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="email" name="email" placeholder="Your Email" required />
+      <textarea name="message" rows="5" placeholder="Your Feedback" required></textarea>
+      <button type="submit">Submit Feedback</button>
+    </form>
+  </div>
+</div>
+
+<!-- Floating CTA Button -->
+
+<a href="{% url 'create_survey' %}" class="cta-btn-fab"><i class="fas fa-plus"></i></a>
+
+
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate-on-scroll').forEach(elem => {
+      observer.observe(elem);
+    });
+  });
+
+  AOS.init({ duration: 1000, once: true });
+</script>
+
+{% endblock %}
