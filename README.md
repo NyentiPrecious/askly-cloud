@@ -1,5 +1,11 @@
 # 🗳️ Askly – Cloud-Native Survey Platform
 
+![Python](https://img.shields.io/badge/Python-3.10-blue.svg)
+![Django](https://img.shields.io/badge/Django-5.2.2-success.svg)
+![Docker](https://img.shields.io/badge/Docker-🐳-2496ED.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-%23336791.svg)
+![Cloud-Ready](https://img.shields.io/badge/Cloud_Ready-Yes-purple.svg)
+
 **Askly** is a customizable, containerized survey platform built with Django, PostgreSQL, and Docker. It helps you create and manage surveys, collect responses, and visualize insights—all while being cloud-ready and scalable. Designed as a learning project for aspiring cloud architects, Askly combines technical precision with creative storytelling. Also, Askly embraces a sleek and modern aesthetic with a glassy purple color palette—balancing elegance with tech minimalism.
 
 ![Askly Banner](./assets/create.png) 
