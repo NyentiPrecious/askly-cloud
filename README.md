@@ -9,7 +9,7 @@
 ![Admin Dashboard](./assets/login.png)
 ![Askly Homepage](./assets/dark-survey.png)
 ![Survey List](./assets/dark-tem.png)
-![Submission Form](./assets/dashboad.png)
+![Submission Form](./assets/dashboard.png)
 ![Admin Dashboard](./assets/template.png)
 ![Askly Homepage](./assets/homeage.png) <!-- optional banner -->
 
