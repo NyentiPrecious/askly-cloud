@@ -5,13 +5,13 @@
 ![Askly Banner](./assets/create.png) 
 ![Askly Homepage](./assets/dark-dash.png)
 ![Survey List](./assets/survey.png)
-![Submission Form](./assets/dak-home.png)
+![Submission Form](./assets/dark-home.png)
 ![Admin Dashboard](./assets/login.png)
 ![Askly Homepage](./assets/dark-survey.png)
 ![Survey List](./assets/dark-tem.png)
 ![Submission Form](./assets/dashboad.png)
 ![Admin Dashboard](./assets/template.png)
-![Askly Homepage](./assets/homepage.png) <!-- optional banner -->
+![Askly Homepage](./assets/homeage.png) <!-- optional banner -->
 
 ---
 
